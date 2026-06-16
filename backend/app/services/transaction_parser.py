@@ -28,27 +28,41 @@ def parse_transactions(text):
 
     lines = text.splitlines()
 
-    for line in lines:
+    for index, line in enumerate(lines):
 
         if is_transaction_start(line):
+            previous_line=(
+                lines[index-1].strip()
+                if index>0
+                else ""
+            )
 
-           parts=line.split()
+            next_line=(
+                lines[index+1].strip()
+                if index<len(lines)-1
+                else ""
 
-           transaction_date=parts[0]
-           value_date=parts[1]
+            )
 
-           debit=clean_amount(parts[2])
-           credit=clean_amount(parts[3])
-           balance=clean_amount(parts[4])
+            description=f"{previous_line} {next_line}".strip()
 
-           transaction=Transaction(
+            parts=line.split()
+
+            transaction_date=parts[0]
+            value_date=parts[1]
+
+            debit=clean_amount(parts[2])
+            credit=clean_amount(parts[3])
+            balance=clean_amount(parts[4])
+
+            transaction=Transaction(
             transaction_date=transaction_date,
             value_date=value_date,
-            description="",
+            description=description,
             debit=debit,
             credit=credit,
             balance=balance
-           )
+            )
 
-           transactions.append(transaction)
+            transactions.append(transaction)
     return transactions
