@@ -1,6 +1,11 @@
+import os
 import pdfplumber
+from dotenv import load_dotenv
 
-def extract_text(pdf_path,password):
+load_dotenv()
+password=os.getenv("PDF_PASSWORD")
+
+def extract_text(pdf_path):
     text=""
 
     with pdfplumber.open(pdf_path,password=password) as pdf:
