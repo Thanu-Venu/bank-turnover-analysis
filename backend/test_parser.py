@@ -1,7 +1,7 @@
 from app.services.pdf_parser import extract_text
 
 text = extract_text(
-    "test_data/sample.pdf"
+    "test_data/multi-line.pdf"
 )
 
 with open("output.txt", "w", encoding="utf-8") as f:
