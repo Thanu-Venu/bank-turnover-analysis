@@ -2,7 +2,7 @@
 PERSONAL STATEMENT Account Number 1 0 1 0 0 0 1 6 7 6 8 2
 N VENUGOPAN
 th
-NO 303/10, MANNAR ROAD, Statement Date 14 Jun 26
+NO 303/10, MANNAR ROAD, Statement Date 19 May 26
 PADDANICHCHIPULIYANKULAM, VAVUNIYA, 43000,
 Regular Current
 Currency LKR
@@ -10,15 +10,22 @@ Branch NDB VAVUNIYA
 Opening Balance Total Debits Total Credits Closing Balance Uncleared Effects (Current)
 wdrïNl fYaIh uq`M yr uq`M ner wjika fYaIh ksYaldIKh fkdjQ whs;u ^cx.u&
 Muk;g kjP p nkhj;jg; gw;Wfs; nkhj;j tuTfs; ,Wjp ,Ug;G Njwhj tpisTfs; (eilKiw)
--1,128,908.21 38,103.00 0.00 -1,167,011.21 0.00
-Brought Forward Balance / bosßhg f.k wd fYaIh/ -1,128,908.21
+-853,219.85 873,103.87 358,070.00 -1,368,253.72 267,570.00
+Brought Forward Balance / bosßhg f.k wd fYaIh/ -853,219.85
 Transaction Date Value Date Description/Reference Debits Credits Balance
 .kqfokqfõ oskh n,d;aul jk oskh úi;a rh$i`oyk yr ner fYaIh
 nfhLf;fy;thq;fy; jpfjp gaDWk; jpfjp tpguk; / Fwpg;gLP gw;Wfs; tuTfs;; kjP p
-FT26164T4V5G; Commitment
-13-Jun-2026 13-Jun-2026 38,103.00 0.00 -1,167,011.21
-Recovery; N VENUGOPAN
-Carry Forward Balance / bosßhg f.khk fYAIh / -1,167,011.21
+NDBACHINR-05-18-2026582;
+18-May-2026 18-May-2026 873,103.87 0.00 -1,726,323.72
+Inward Clearing; CHQ NO - 37785
+18-May-2026 18-May-2026 TT26138G1D20; Cash Deposit 0.00 90,500.00 -1,635,823.72
+TT2613899YK3\HOF; Outward
+18-May-2026 19-May-2026 Cheque Deposit; 047; CHQ NO - 0.00 16,020.00 -1,619,803.72
+118271
+TT26138K5DVX\HOF; Outward
+18-May-2026 19-May-2026 Cheque Deposit; 033; CHQ NO - 0.00 251,550.00 -1,368,253.72
+664930
+Carry Forward Balance / bosßhg f.khk fYAIh / -1,368,253.72
 ---End of e-Statement---
 National Development Bank PLC. (Company Reg. No. PQ27) | No 40, Nawam Mawatha, Colombo 02.
 T: 94 11 2448888 | F: 94 11 2440262 | E: contact@ndbbank.com | W: www.ndbbank.com
