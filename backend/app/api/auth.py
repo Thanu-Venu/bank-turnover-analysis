@@ -19,6 +19,8 @@ async def auth_callback(request:Request):
     token = await oauth.google.authorize_access_token(
         request
     )
+    request.session["token"]=token
+    
     print("login succesful")
     user_info= token.get("userinfo")
 
