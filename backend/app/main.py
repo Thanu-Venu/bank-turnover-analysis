@@ -1,12 +1,15 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
+load_dotenv()
 from starlette.middleware.sessions import SessionMiddleware
 from app.api.auth import router as auth_router
 from app.api.reports import router as reports_router
 import os
-from dotenv import load_dotenv
+from app.api.gmail import router as gmail_router
+
 
 app=FastAPI()
-load_dotenv()
+
 print("SECRET_KEY =", os.getenv("SECRET_KEY"))
 app.add_middleware(
     SessionMiddleware,
@@ -14,6 +17,7 @@ app.add_middleware(
 )
 app.include_router(auth_router)
 app.include_router(reports_router)
+app.include_router(gmail_router)
 
 @app.get("/")
 def root():
