@@ -1,11 +1,5 @@
 from fastapi import FastAPI
+from app.api.reports import router as reports_router
 
-app=FastAPI(
-    title="Bank Turnover Analyzer API"
-)
-
-@app.get("/")
-def root():
-    return{
-        "message": "Bank Turnover analyzer API running successfully"
-    }
+app=FastAPI()
+app.include_router(reports_router)
