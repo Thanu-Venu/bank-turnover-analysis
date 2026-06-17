@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 from starlette.requests import Request
-from app.services.gmail_service import get_gmail_service,get_message_details
+from app.services.gmail_service import get_gmail_service,get_message_details,get_message,download_attachment
+from app.services.statement_processor import process_statement
+
 router=APIRouter()
 
 @router.get("/gmail/test")
@@ -79,3 +81,61 @@ async def get_ndb_statements(request:Request):
         .execute()
     )
     return results
+
+@router.get("/gmail/ndb-first")
+
+async def get_first_ndb_email(request:Request):
+    token=request.session.get("token")
+
+    if not token:
+        return{
+            "error":"Not authenticated"
+        }
+
+    service=get_gmail_service(token)
+
+    results=(
+        service.users()
+        .messages()
+        .list(
+            userId="me",
+            q="from:estatements@ndbbank.com"
+        )
+        .execute()
+    )
+
+    first_message_id=results["messages"][0]["id"]
+
+    message=get_message(
+        service,
+        first_message_id
+    )
+
+    for part in message["payload"]["parts"]:
+        if part.get("filename"):
+            attachment_id=(
+                part["body"]["attachmentId"]
+            )
+
+            pdf_data=download_attachment(
+                service,
+                first_message_id,
+                attachment_id
+            )
+
+            filename=part["filename"]
+            with open(
+                f"statements/{filename}",
+                "wb"
+            ) as f:
+                f.write(pdf_data)
+
+            transactions = process_statement(f"statements/{filename}")
+
+            return {
+                "filename":filename,
+                "transactions_found":len(transactions)
+            }
+
+
+    return message
