@@ -202,9 +202,8 @@ async def process_all_statements(request:Request):
                     f"skipping non-current account statements: {filename}"
                 )
                 continue
-            
-            save_transactions(transactions)
-            transaction_count+=len(transactions)
+            saved = save_transactions(transactions)
+            transaction_count+=saved
             mark_email_processed(message_id)
             processed_count+=1
 
