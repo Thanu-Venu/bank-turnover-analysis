@@ -2,6 +2,7 @@ from sqlalchemy import func
 
 from app.db.database import SessionLocal
 from app.models.transactions import Transaction
+from sqlalchemy import extract
 
 def yearly_turnover(year):
     db=SessionLocal()
@@ -47,3 +48,34 @@ def yearly_turnover(year):
         }
     finally:
         db.close()
+
+def get_monthly_report(year,month):
+    db=SessionLocal()
+
+    transactions=(
+        db.query(Transaction)
+        .filter(
+            extract("year",Transaction.transaction_date)==year,
+            extract("month",Transaction.transaction_date)==month
+        )
+        .all()
+    )
+
+    total_debits=sum(
+        tx.debit for tx in transactions
+    )
+
+    total_credits=sum(
+        tx.credit for tx in transactions
+    )
+
+    report={
+        "year":year,
+        "month":month,
+        "total_debits":total_debits,
+        "total_credits":total_credits,
+        "transaction_count":len(transactions)
+    }
+
+    db.close()
+    return report
