@@ -196,6 +196,13 @@ async def process_all_statements(request:Request):
             with open(pdf_path,"wb") as f:
                 f.write(pdf_data)
             transactions=process_statement(pdf_path)
+
+            if transactions is None:
+                print(
+                    f"skipping non-current account statements: {filename}"
+                )
+                continue
+            
             save_transactions(transactions)
             transaction_count+=len(transactions)
             mark_email_processed(message_id)
