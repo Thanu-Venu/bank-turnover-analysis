@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.report_service import yearly_turnover,get_monthly_report
+from app.services.report_service import yearly_turnover,get_monthly_report,get_dashboard_summary,get_monthly_trend
 
 router=APIRouter()
 
@@ -10,3 +10,11 @@ def get_yearly_report(year:int):
 @router.get("/reports/monthly/{year}/{month}")
 def monthly_report(year:int,month:int):
     return get_monthly_report(year,month)
+
+@router.get("/dashboard/summary")
+def dashboard_summary():
+    return get_dashboard_summary()
+
+@router.get("/dashboard/monthly-trend")
+def monthly_trend():
+    return get_monthly_trend()
