@@ -3,11 +3,29 @@ import api from "../services/api";
 import SummaryCard from "../components/SummaryCard";
 import MonthlyTrendChart from "../components/MonthlyTrendChart";
 import RecentTransactions from "../components/RecentTransactions";
+import Sidebar from "../components/Sidebar";
+import UserProfile from "../components/UserProfile";
 
 function Dashboard() {
     const [summary, setSummary] = useState(null);
     const [trend, setTrend] = useState([]);
     const [recentTransactions, setRecentTransactions] = useState([]);
+    const handleSync = () => {
+        api
+            .get("/gmail/process-all")
+            .then((response) => {
+                alert(
+                    JSON.stringify(
+                        response.data,
+                        null,
+                        2
+                    )
+                );
+            });
+    };
+
+    const [user, setUser] =
+        useState(null);
 
     useEffect(() => {
         api
@@ -36,6 +54,11 @@ function Dashboard() {
             .catch((error) => {
                 console.error(error);
             });
+        api
+            .get("/auth/me")
+            .then((response) => {
+                setUser(response.data);
+            });
     }, []);
 
     const formatCurrency = (value) => {
@@ -63,8 +86,25 @@ function Dashboard() {
             </div>
         );
     }
+    console.log("USER DATA:", user);
 
     return (
+        <div
+            style={{
+                display: "flex",
+                backgroundColor: "#0f172a",
+                color: "white",
+            }}
+        >
+            <Sidebar onSync={handleSync} />
+            <div
+                style={{
+                    flex: 1,
+                    padding: "40px",
+                }}
+            >
+
+
         <div
             style={{
                 minHeight: "100vh",
@@ -74,28 +114,36 @@ function Dashboard() {
                 fontFamily: "Arial, sans-serif",
             }}
         >
-            {/* Header */}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "40px",
+                        }}
+                    >
+                        <div>
+                            <h3
+                                style={{
+                                    fontSize: "30px",
+                                    margin: 0,
+                                }}
+                            >
+                                Bank Turnover Analyzer
+                            </h3>
 
-            <div style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1
-                    style={{
-                        fontSize: "60px",
-                        marginBottom: "10px",
-                    }}
-                >
-                    Bank Turnover Dashboard
-                </h1>
+                            <p
+                                style={{
+                                    color: "#94a3b8",
+                                    marginTop: "10px",
+                                }}
+                            >
+                                Statement Period: {summary.first_transaction} → {summary.last_transaction}
+                            </p>
+                        </div>
 
-                <p
-                    style={{
-                        color: "#94a3b8",
-                        fontSize: "18px",
-                    }}
-                >
-                    Statement Period: {summary.first_transaction} →{" "}
-                    {summary.last_transaction}
-                </p>
-            </div>
+                        {user && <UserProfile user={user} />}
+                    </div>
 
             {/* Summary Cards */}
 
@@ -152,6 +200,8 @@ function Dashboard() {
             {/* Recent Transactions Section */}
 
             <RecentTransactions transactions={recentTransactions} />
+            </div>
+        </div>
         </div>
     );
 }
