@@ -11,7 +11,9 @@ async def login(request:Request):
 
     return await oauth.google.authorize_redirect(
         request,
-        redirect_uri
+        redirect_uri,
+        access_type="offline",
+        prompt="consent"
     )
 
 @router.get("/auth/callback")
@@ -19,8 +21,9 @@ async def auth_callback(request:Request):
     token = await oauth.google.authorize_access_token(
         request
     )
+    print(token.keys())
+
     request.session["token"]=token
-    
     print("login succesful")
     user_info= token.get("userinfo")
 

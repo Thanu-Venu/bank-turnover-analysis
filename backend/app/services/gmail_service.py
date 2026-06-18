@@ -1,11 +1,19 @@
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from dotenv import load_dotenv
+import os
 import base64
+
+load_dotenv()
 
 def get_gmail_service(token):
 
     credentials= Credentials(
-        token=token["access_token"]
+        token=token["access_token"],
+        refresh_token=token["refresh_token"],
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=os.getenv("GOOGLE_CLIENT_ID"),
+        client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
     )
 
     service=build(

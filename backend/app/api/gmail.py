@@ -2,7 +2,8 @@ from fastapi import APIRouter
 from starlette.requests import Request
 from app.services.gmail_service import get_gmail_service,get_message_details,get_message,download_attachment
 from app.services.statement_processor import process_statement
-
+from app.services.transaction_storage import save_transactions
+from app.services.email_tracker import(is_email_processed,mark_email_processed)
 router=APIRouter()
 
 @router.get("/gmail/test")
@@ -139,3 +140,69 @@ async def get_first_ndb_email(request:Request):
 
 
     return message
+
+@router.get("/gmail/process-all")
+async def process_all_statements(request:Request):
+    token=request.session.get("token")
+
+    if not token:
+        return{
+            "error":"Not authenticated"
+        }
+
+    service=get_gmail_service(token)
+
+    results=(
+        service.users()
+        .messages()
+        .list(
+            userId="me",
+            q="from:estatements@ndbbank.com"
+        )
+        .execute()
+    )
+
+    messages=results.get("messages",[])
+
+    processed_count=0
+    skipped_count=0
+    transaction_count=0
+
+    for msg in messages:
+        message_id=msg["id"]
+
+        if is_email_processed(message_id):
+            skipped_count+=1
+            continue
+
+        message=get_message(
+            service,
+            message_id
+        )
+
+        parts=message["payload"].get("parts",[])
+        for part in parts:
+            filename=part.get("filename")
+
+            if not filename.endswith(".pdf"):
+                continue
+            attachment_id=part["body"]["attachmentId"]
+            pdf_data=download_attachment(
+                service,
+                message_id,
+                attachment_id
+            )
+            pdf_path=f"statements/{filename}"
+            with open(pdf_path,"wb") as f:
+                f.write(pdf_data)
+            transactions=process_statement(pdf_path)
+            save_transactions(transactions)
+            transaction_count+=len(transactions)
+            mark_email_processed(message_id)
+            processed_count+=1
+
+    return{
+        "processed_emails":processed_count,
+        "skipped_emails":skipped_count,
+        "total_transactions":transaction_count
+    }
