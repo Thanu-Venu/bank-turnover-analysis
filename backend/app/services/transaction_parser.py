@@ -24,7 +24,6 @@ def parse_transactions(text):
     transactions = []
 
     lines = [line.strip() for line in text.splitlines()]
-
     for index, line in enumerate(lines):
 
         if not is_transaction_start(line):
