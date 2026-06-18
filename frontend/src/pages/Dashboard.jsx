@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import SummaryCard from "../components/SummaryCard";
 import MonthlyTrendChart from "../components/MonthlyTrendChart";
+import RecentTransactions from "../components/RecentTransactions";
 
 function Dashboard() {
     const [summary, setSummary] = useState(null);
     const [trend, setTrend] = useState([]);
+    const [recentTransactions, setRecentTransactions] = useState([]);
 
     useEffect(() => {
         api
@@ -21,6 +23,15 @@ function Dashboard() {
             .get("/dashboard/monthly-trend")
             .then((response) => {
                 setTrend(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
+        api
+            .get("/dashboard/recent-transactions")
+            .then((response) => {
+                setRecentTransactions(response.data);
             })
             .catch((error) => {
                 console.error(error);
@@ -137,6 +148,10 @@ function Dashboard() {
             >
                 <MonthlyTrendChart data={trend} />
             </div>
+
+            {/* Recent Transactions Section */}
+
+            <RecentTransactions transactions={recentTransactions} />
         </div>
     );
 }
