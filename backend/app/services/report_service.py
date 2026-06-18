@@ -150,3 +150,34 @@ def get_monthly_trend():
 
     db.close()
     return trend
+
+def get_recent_transactions(limit=10):
+
+    db = SessionLocal()
+
+    transactions = (
+        db.query(Transaction)
+        .order_by(
+            Transaction.transaction_date.desc()
+        )
+        .limit(limit)
+        .all()
+    )
+
+    result = []
+
+    for tx in transactions:
+
+        result.append(
+            {
+                "date": tx.transaction_date,
+                "description": tx.description,
+                "debit": tx.debit,
+                "credit": tx.credit,
+                "balance": tx.balance
+            }
+        )
+
+    db.close()
+
+    return result
