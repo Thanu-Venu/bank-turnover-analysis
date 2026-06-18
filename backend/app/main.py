@@ -6,11 +6,18 @@ from app.api.auth import router as auth_router
 from app.api.reports import router as reports_router
 import os
 from app.api.gmail import router as gmail_router
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app=FastAPI()
 
 print("SECRET_KEY =", os.getenv("SECRET_KEY"))
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173","http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SECRET_KEY")
