@@ -26,9 +26,24 @@ async def auth_callback(request:Request):
     request.session["token"]=token
     print("login succesful")
     user_info= token.get("userinfo")
+    request.session["user"] = {
+    "name": user_info["name"],
+    "email": user_info["email"]
+    }
 
     return{
 
         "email":user_info["email"],
         "name":user_info["name"],
     }
+
+@router.get("/auth/me")
+async def get_user(request: Request):
+
+    user=request.session.get("user")
+
+    if not user :
+        return{
+            "error":"Not authenticated"
+        }
+    return user
