@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from starlette.requests import Request
 import os
 from app.core.oauth import oauth
-
+from fastapi.responses import RedirectResponse
 router=APIRouter()
 
 @router.get("/auth/login")
@@ -31,11 +31,8 @@ async def auth_callback(request:Request):
     "email": user_info["email"]
     }
 
-    return{
+    return RedirectResponse(url="http://localhost:5173/")
 
-        "email":user_info["email"],
-        "name":user_info["name"],
-    }
 
 @router.get("/auth/me")
 async def get_user(request: Request):
@@ -47,3 +44,10 @@ async def get_user(request: Request):
             "error":"Not authenticated"
         }
     return user
+
+@router.get("/auth/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return{
+        "message":"Logged out successfully"
+    }
