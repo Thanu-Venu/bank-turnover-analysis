@@ -1,96 +1,207 @@
-function RecentTransactions({ transactions }) {
+import { useState } from "react";
 
-    const formatCurrency = (value) => {
+const formatCurrency = (value) =>
+    new Intl.NumberFormat("en-LK", {
+        style: "currency",
+        currency: "LKR",
+        minimumFractionDigits: 2,
+    }).format(value);
 
-        return new Intl.NumberFormat(
-            "en-LK",
-            {
-                style: "currency",
-                currency: "LKR"
-            }
-        ).format(value);
-    };
+/* ─── single row ────────────────────────────────────────────────────────────── */
+function TxRow({ tx, index, theme }) {
+    const [hovered, setHovered] = useState(false);
+    const dark = theme !== "light";
+
+    const rowBg = hovered
+        ? dark
+            ? "rgba(255,255,255,0.05)"
+            : "rgba(0,0,0,0.03)"
+        : "transparent";
+
+    const borderColor = dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+    const textPrimary = dark ? "#f1f5f9" : "#0f172a";
+    const textMuted = dark ? "#64748b" : "#94a3b8";
+
+    const isDebit = tx.debit > 0;
+    const isCredit = tx.credit > 0;
 
     return (
-        <div
+        <tr
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
             style={{
-                backgroundColor: "#1e293b",
-                padding: "25px",
-                borderRadius: "20px",
-                marginTop: "40px"
+                backgroundColor: rowBg,
+                borderBottom: `1px solid ${borderColor}`,
+                transition: "background-color 0.15s ease",
+                cursor: "default",
             }}
         >
-            <h2
+            {/* Date */}
+            <td
                 style={{
-                    marginBottom: "20px"
+                    padding: "13px 16px",
+                    fontSize: "12px",
+                    color: textMuted,
+                    fontVariantNumeric: "tabular-nums",
+                    whiteSpace: "nowrap",
                 }}
             >
-                Recent Transactions
-            </h2>
+                {tx.date}
+            </td>
 
+            {/* Description */}
+            <td
+                style={{
+                    padding: "13px 16px",
+                    fontSize: "13px",
+                    color: textPrimary,
+                    maxWidth: "260px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                }}
+                title={tx.description}
+            >
+                {tx.description}
+            </td>
+
+            {/* Debit */}
+            <td style={{ padding: "13px 16px", textAlign: "right" }}>
+                {isDebit ? (
+                    <span
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            background: "rgba(239,68,68,0.12)",
+                            color: "#f87171",
+                            borderRadius: "7px",
+                            padding: "3px 9px",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            fontVariantNumeric: "tabular-nums",
+                            border: "1px solid rgba(239,68,68,0.20)",
+                        }}
+                    >
+                        ▼ {formatCurrency(tx.debit)}
+                    </span>
+                ) : (
+                    <span style={{ color: textMuted, fontSize: "12px" }}>—</span>
+                )}
+            </td>
+
+            {/* Credit */}
+            <td style={{ padding: "13px 16px", textAlign: "right" }}>
+                {isCredit ? (
+                    <span
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            background: "rgba(16,185,129,0.12)",
+                            color: "#34d399",
+                            borderRadius: "7px",
+                            padding: "3px 9px",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            fontVariantNumeric: "tabular-nums",
+                            border: "1px solid rgba(16,185,129,0.20)",
+                        }}
+                    >
+                        ▲ {formatCurrency(tx.credit)}
+                    </span>
+                ) : (
+                    <span style={{ color: textMuted, fontSize: "12px" }}>—</span>
+                )}
+            </td>
+
+            {/* Balance */}
+            <td
+                style={{
+                    padding: "13px 16px",
+                    textAlign: "right",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    color: textPrimary,
+                    fontVariantNumeric: "tabular-nums",
+                    whiteSpace: "nowrap",
+                }}
+            >
+                {formatCurrency(tx.balance)}
+            </td>
+        </tr>
+    );
+}
+
+/* ─── main component ────────────────────────────────────────────────────────── */
+function RecentTransactions({ transactions, theme = "dark" }) {
+    const dark = theme !== "light";
+
+    const headerBg = dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)";
+    const headerText = dark ? "#64748b" : "#94a3b8";
+    const borderColor = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
+
+    if (!transactions?.length) {
+        return (
+            <div
+                style={{
+                    textAlign: "center",
+                    padding: "48px 0",
+                    color: dark ? "#475569" : "#94a3b8",
+                    fontSize: "14px",
+                }}
+            >
+                No recent transactions to display.
+            </div>
+        );
+    }
+
+    return (
+        <div style={{ overflowX: "auto", margin: "0 -4px" }}>
             <table
                 style={{
                     width: "100%",
                     borderCollapse: "collapse",
-                    color: "white"
+                    fontSize: "13px",
                 }}
             >
                 <thead>
                     <tr
                         style={{
-                            backgroundColor: "#334155"
+                            backgroundColor: headerBg,
+                            borderBottom: `1px solid ${borderColor}`,
                         }}
                     >
-                        <th style={{ padding: "12px" }}>Date</th>
-                        <th style={{ padding: "12px" }}>Description</th>
-                        <th style={{ padding: "12px" }}>Debit</th>
-                        <th style={{ padding: "12px" }}>Credit</th>
-                        <th style={{ padding: "12px" }}>Balance</th>
+                        {["Date", "Description", "Debit", "Credit", "Balance"].map(
+                            (col, i) => (
+                                <th
+                                    key={col}
+                                    style={{
+                                        padding: "10px 16px",
+                                        textAlign: i >= 2 ? "right" : "left",
+                                        fontSize: "10px",
+                                        fontWeight: 700,
+                                        letterSpacing: "0.09em",
+                                        textTransform: "uppercase",
+                                        color: headerText,
+                                        whiteSpace: "nowrap",
+                                    }}
+                                >
+                                    {col}
+                                </th>
+                            )
+                        )}
                     </tr>
                 </thead>
 
                 <tbody>
                     {transactions.map((tx, index) => (
-                        <tr
+                        <TxRow
                             key={index}
-                            style={{
-                                borderBottom: "1px solid #475569"
-                            }}
-                        >
-                            <td style={{ padding: "12px" }}>
-                                {tx.date}
-                            </td>
-
-                            <td style={{ padding: "12px" }}>
-                                {tx.description}
-                            </td>
-
-                            <td
-                                style={{
-                                    padding: "12px",
-                                    color: "#ef4444"
-                                }}
-                            >
-                                {tx.debit > 0
-                                    ? formatCurrency(tx.debit)
-                                    : "-"}
-                            </td>
-
-                            <td
-                                style={{
-                                    padding: "12px",
-                                    color: "#22c55e"
-                                }}
-                            >
-                                {tx.credit > 0
-                                    ? formatCurrency(tx.credit)
-                                    : "-"}
-                            </td>
-
-                            <td style={{ padding: "12px" }}>
-                                {formatCurrency(tx.balance)}
-                            </td>
-                        </tr>
+                            tx={tx}
+                            index={index}
+                            theme={theme}
+                        />
                     ))}
                 </tbody>
             </table>
