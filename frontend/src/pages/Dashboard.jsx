@@ -10,7 +10,9 @@ function Dashboard() {
     const [summary, setSummary] = useState(null);
     const [trend, setTrend] = useState([]);
     const [recentTransactions, setRecentTransactions] = useState([]);
+    const [syncing, setSyncing] = useState(false);
     const handleSync = () => {
+        setSyncing(true);
         api
             .get("/gmail/process-all")
             .then((response) => {
@@ -22,6 +24,9 @@ function Dashboard() {
                 setTimeout(() => {
                     setSyncMessage(null);
                 }, 5000);
+            })
+            .finally(() => {
+                setSyncing(false);
             });
     };
 
@@ -124,6 +129,7 @@ function Dashboard() {
             <Sidebar
                 onSync={handleSync}
                 onLogout={handleLogout}
+                syncing={syncing}
             />
 
             <div
