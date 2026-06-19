@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-function Sidebar({ onSync,onLogout }) {
+function Sidebar({ onSync,onLogout,syncing }) {
     return (
         <div
             style={{
@@ -57,7 +57,7 @@ function Sidebar({ onSync,onLogout }) {
                     borderRadius: "10px",
                     cursor: "pointer",
                 }}>
-                    Sync Statements
+                   {syncing ? "🔄 Syncing..." : "🔄 Sync Statements"}
                 </button>
 
                 <button style={{
