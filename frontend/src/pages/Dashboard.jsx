@@ -14,18 +14,33 @@ function Dashboard() {
         api
             .get("/gmail/process-all")
             .then((response) => {
-                alert(
-                    JSON.stringify(
-                        response.data,
-                        null,
-                        2
-                    )
+
+                setSyncMessage(
+                    `✅ Sync Complete | Processed: ${response.data.processed_emails} | Skipped: ${response.data.skipped_emails} | Transactions: ${response.data.total_transactions}`
                 );
+
+                setTimeout(() => {
+                    setSyncMessage(null);
+                }, 5000);
             });
     };
 
     const [user, setUser] =
         useState(null);
+
+    const handleLogout = () => {
+
+        api
+            .get("/auth/logout")
+            .then(() => {
+
+                window.location.href =
+                    "http://localhost:5173/login";
+
+            });
+    };
+
+    const [syncMessage, setSyncMessage] = useState(null);
 
     useEffect(() => {
         api
@@ -57,6 +72,15 @@ function Dashboard() {
         api
             .get("/auth/me")
             .then((response) => {
+
+                if (response.data.error) {
+
+                    window.location.href =
+                        "/login";
+
+                    return;
+                }
+
                 setUser(response.data);
             });
     }, []);
@@ -82,6 +106,7 @@ function Dashboard() {
                     fontSize: "24px",
                 }}
             >
+
                 Loading Dashboard...
             </div>
         );
@@ -96,24 +121,46 @@ function Dashboard() {
                 color: "white",
             }}
         >
-            <Sidebar onSync={handleSync} />
+            <Sidebar
+                onSync={handleSync}
+                onLogout={handleLogout}
+            />
+
             <div
                 style={{
                     flex: 1,
                     padding: "40px",
                 }}
             >
+                <div
+                    style={{
+                        minHeight: "100vh",
+                        backgroundColor: "#0f172a",
+                        color: "white",
+                        fontFamily: "Arial, sans-serif",
+                    }}
+                >
 
+                    {/* Sync Success Notification */}
 
-        <div
-            style={{
-                minHeight: "100vh",
-                backgroundColor: "#0f172a",
-                color: "white",
-                padding: "40px",
-                fontFamily: "Arial, sans-serif",
-            }}
-        >
+                    {syncMessage && (
+                        <div
+                            style={{
+                                backgroundColor: "#166534",
+                                color: "white",
+                                padding: "15px",
+                                borderRadius: "10px",
+                                marginBottom: "20px",
+                                textAlign: "center",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            {syncMessage}
+                        </div>
+                    )}
+
+                    {/* Header */}
+
                     <div
                         style={{
                             display: "flex",
@@ -123,14 +170,14 @@ function Dashboard() {
                         }}
                     >
                         <div>
-                            <h3
+                            <h1
                                 style={{
-                                    fontSize: "30px",
+                                    fontSize: "42px",
                                     margin: 0,
                                 }}
                             >
-                                Bank Turnover Analyzer
-                            </h3>
+                                💰 Bank Turnover Analyzer
+                            </h1>
 
                             <p
                                 style={{
@@ -138,70 +185,94 @@ function Dashboard() {
                                     marginTop: "10px",
                                 }}
                             >
-                                Statement Period: {summary.first_transaction} → {summary.last_transaction}
+                                Statement Period:
+                                {" "}
+                                {summary.first_transaction}
+                                {" → "}
+                                {summary.last_transaction}
                             </p>
                         </div>
 
-                        {user && <UserProfile user={user} />}
+                        {user &&
+                            !user.error && (
+                                <UserProfile
+                                    user={user}
+                                />
+                            )}
                     </div>
 
-            {/* Summary Cards */}
+                    {/* Summary Cards */}
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
-                    gap: "25px",
-                    marginBottom: "50px",
-                }}
-            >
-                <SummaryCard
-                    title="Transactions"
-                    value={summary.total_transactions}
-                    background="#1e293b"
-                />
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                                "repeat(auto-fit,minmax(260px,1fr))",
+                            gap: "25px",
+                            marginBottom: "50px",
+                        }}
+                    >
+                        <SummaryCard
+                            title="Transactions"
+                            value={summary.total_transactions}
+                            background="#1e293b"
+                        />
 
-                <SummaryCard
-                    title="Total Debits"
-                    value={formatCurrency(summary.total_debits)}
-                    background="#334155"
-                />
+                        <SummaryCard
+                            title="Total Debits"
+                            value={formatCurrency(
+                                summary.total_debits
+                            )}
+                            background="#334155"
+                        />
 
-                <SummaryCard
-                    title="Total Credits"
-                    value={formatCurrency(summary.total_credits)}
-                    background="#14532d"
-                />
+                        <SummaryCard
+                            title="Total Credits"
+                            value={formatCurrency(
+                                summary.total_credits
+                            )}
+                            background="#14532d"
+                        />
 
-                <SummaryCard
-                    title="Net Flow"
-                    value={formatCurrency(summary.net_flow)}
-                    background={
-                        summary.net_flow >= 0
-                            ? "#166534"
-                            : "#7f1d1d"
-                    }
-                />
+                        <SummaryCard
+                            title="Net Flow"
+                            value={formatCurrency(
+                                summary.net_flow
+                            )}
+                            background={
+                                summary.net_flow >= 0
+                                    ? "#166534"
+                                    : "#7f1d1d"
+                            }
+                        />
+                    </div>
+
+                    {/* Monthly Trend Chart */}
+
+                    <div
+                        style={{
+                            backgroundColor: "#1e293b",
+                            borderRadius: "20px",
+                            padding: "30px",
+                            boxShadow:
+                                "0 0 20px rgba(0,0,0,0.3)",
+                            marginBottom: "40px",
+                        }}
+                    >
+                        <MonthlyTrendChart
+                            data={trend}
+                        />
+                    </div>
+
+                    {/* Recent Transactions */}
+
+                    <RecentTransactions
+                        transactions={
+                            recentTransactions
+                        }
+                    />
+                </div>
             </div>
-
-            {/* Chart Section */}
-
-            <div
-                style={{
-                    backgroundColor: "#1e293b",
-                    borderRadius: "20px",
-                    padding: "30px",
-                    boxShadow: "0 0 20px rgba(0,0,0,0.3)",
-                }}
-            >
-                <MonthlyTrendChart data={trend} />
-            </div>
-
-            {/* Recent Transactions Section */}
-
-            <RecentTransactions transactions={recentTransactions} />
-            </div>
-        </div>
         </div>
     );
 }

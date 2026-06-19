@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-function Sidebar({ onSync }) {
+function Sidebar({ onSync,onLogout }) {
     return (
         <div
             style={{
@@ -67,7 +67,7 @@ function Sidebar({ onSync }) {
                     padding: "12px",
                     borderRadius: "10px",
                     cursor: "pointer",
-                }}>
+                }} onClick={onLogout}>
                     Logout
                 </button>
             </div>

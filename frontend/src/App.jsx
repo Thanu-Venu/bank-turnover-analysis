@@ -6,13 +6,18 @@ import {
 
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
-
+import Login from "./pages/Login";
 function App() {
 
   return (
     <BrowserRouter>
 
       <Routes>
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
         <Route
           path="/"
@@ -23,6 +28,7 @@ function App() {
           path="/reports"
           element={<Reports />}
         />
+
 
       </Routes>
 
