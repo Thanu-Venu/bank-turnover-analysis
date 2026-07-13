@@ -1,17 +1,20 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
 
-DATABASE_URL = (
-    "postgresql://admin:password123@localhost:5432/turnoverdb"
+# Read database URL from environment for Docker compatibility
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://admin:password123@localhost:5432/turnoverdb",
 )
 
-engine= create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL)
 
-SessionLocal=sessionmaker(
+SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine
+    bind=engine,
 )
 
-Base=declarative_base()
+Base = declarative_base()
