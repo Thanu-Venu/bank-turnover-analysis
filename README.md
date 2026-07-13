@@ -153,5 +153,3 @@ PYTHONPATH=. python3 scripts/full_audit.py
 ```
 
 ---
-
-iliation CSV now or run the re-download & reprocess step (you'll need to stay signed in while I call the endpoints).
