@@ -19,4 +19,5 @@ class Transaction(Base):
     debit=Column(Float)
     credit=Column(Float)
     balance=Column(Float)
+    owner_email=Column(String, nullable=True)
     created_at=Column(DateTime,default=datetime.utcnow)

@@ -1,10 +1,11 @@
 import { useState } from "react";
+import api from "../services/api";
 
 function Login() {
     const [hovered, setHovered] = useState(false);
 
     const handleLogin = () => {
-        window.location.href = "http://localhost:8000/auth/login";
+        window.location.href = `${api.defaults.baseURL}/auth/login`;
     };
 
     return (
