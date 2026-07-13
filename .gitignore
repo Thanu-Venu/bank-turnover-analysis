@@ -219,3 +219,6 @@ __marimo__/
 
 secrets/
 *.json
+# Explicit backend secrets
+/backend/.env
+/backend/secrets/
