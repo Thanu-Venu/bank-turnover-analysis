@@ -1,5 +1,6 @@
 from app.db.database import SessionLocal
 from app.models.processed_email import ProcessedEmail
+from sqlalchemy.exc import IntegrityError
 
 def is_email_processed(message_id):
     db=SessionLocal()
@@ -17,7 +18,12 @@ def is_email_processed(message_id):
 def mark_email_processed(message_id):
     db=SessionLocal()
 
-    email=ProcessedEmail(message_id=message_id)
-    db.add(email)
-    db.commit()
-    db.close()
+    try:
+        email=ProcessedEmail(message_id=message_id)
+        db.add(email)
+        db.commit()
+    except IntegrityError:
+        # already present (race or duplicate); ignore
+        db.rollback()
+    finally:
+        db.close()

@@ -1,7 +1,7 @@
 from app.db.database import SessionLocal
 from app.models.transactions import Transaction
 
-def save_transactions(transactions):
+def save_transactions(transactions, owner_email=None):
     db=SessionLocal()
     inserted_count=0
 
@@ -13,7 +13,8 @@ def save_transactions(transactions):
             description=tx.description,
             debit=tx.debit,
             credit=tx.credit,
-            balance=tx.balance
+            balance=tx.balance,
+            owner_email=owner_email
         )
         existing=(
             db.query(Transaction)

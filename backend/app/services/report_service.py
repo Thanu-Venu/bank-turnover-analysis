@@ -3,12 +3,17 @@ from app.db.database import SessionLocal
 from app.models.transactions import Transaction
 from sqlalchemy import extract
 
-def yearly_turnover(year):
+def yearly_turnover(year, owner_email=None):
+    def _query_with_owner(q, owner_email):
+        if owner_email:
+            return q.filter(Transaction.owner_email == owner_email)
+        return q
+
     db=SessionLocal()
 
     try:
         total_debits=(
-            db.query(func.sum(Transaction.debit))
+            _query_with_owner(db.query(func.sum(Transaction.debit)), owner_email)
             .filter(
                 func.extract(
                     "year",
@@ -19,7 +24,7 @@ def yearly_turnover(year):
         )
 
         total_credits=(
-            db.query(func.sum(Transaction.credit))
+            _query_with_owner(db.query(func.sum(Transaction.credit)), owner_email)
             .filter(
                 func.extract(
                     "year",
@@ -30,7 +35,7 @@ def yearly_turnover(year):
         )
 
         count=(
-            db.query(Transaction)
+            _query_with_owner(db.query(Transaction), owner_email)
             .filter(
                 func.extract(
                     "year",
@@ -48,12 +53,15 @@ def yearly_turnover(year):
     finally:
         db.close()
 
-def get_monthly_report(year,month):
+def get_monthly_report(year,month, owner_email=None):
     db=SessionLocal()
 
+    q = db.query(Transaction)
+    if owner_email:
+        q = q.filter(Transaction.owner_email == owner_email)
+
     transactions=(
-        db.query(Transaction)
-        .filter(
+        q.filter(
             extract("year",Transaction.transaction_date)==year,
             extract("month",Transaction.transaction_date)==month
         )
@@ -79,36 +87,31 @@ def get_monthly_report(year,month):
     db.close()
     return report
 
-def get_dashboard_summary():
+def get_dashboard_summary(owner_email=None):
     db=SessionLocal()
+
+    q = db.query(Transaction)
+    if owner_email:
+        q = q.filter(Transaction.owner_email == owner_email)
+
     total_transactions=(
-        db.query(Transaction).count()
+        q.count()
     )
 
     total_debits=(
-        db.query(func.sum(Transaction.debit)).scalar() or 0
+        q.with_entities(func.sum(Transaction.debit)).scalar() or 0
     )
 
     total_credits=(
-        db.query(func.sum(Transaction.credit)).scalar() or 0
+        q.with_entities(func.sum(Transaction.credit)).scalar() or 0
     )
 
     first_transaction=(
-        db.query(
-            func.min(
-                Transaction.transaction_date
-            )
-        )
-        .scalar()
+        q.with_entities(func.min(Transaction.transaction_date)).scalar()
     )
 
     last_transaction=(
-        db.query(
-            func.max(
-                Transaction.transaction_date
-            )
-        )
-        .scalar()
+        q.with_entities(func.max(Transaction.transaction_date)).scalar()
     )
 
     db.close()
@@ -122,11 +125,10 @@ def get_dashboard_summary():
         "last_transaction":last_transaction
     }
 
-def get_monthly_trend():
+def get_monthly_trend(owner_email=None):
     db=SessionLocal()
 
-    results=(
-        db.query(
+    q = db.query(
             func.date_trunc(
                 "month",
                 Transaction.transaction_date
@@ -134,7 +136,12 @@ def get_monthly_trend():
             func.sum(Transaction.debit).label("total_debits"),
             func.sum(Transaction.credit).label("total_credits")
         )
-        .group_by("month")
+
+    if owner_email:
+        q = q.filter(Transaction.owner_email == owner_email)
+
+    results=(
+        q.group_by("month")
         .order_by("month")
         .all()
     )
@@ -151,13 +158,16 @@ def get_monthly_trend():
     db.close()
     return trend
 
-def get_recent_transactions(limit=10):
+def get_recent_transactions(limit=10, owner_email=None):
 
     db = SessionLocal()
 
+    q = db.query(Transaction)
+    if owner_email:
+        q = q.filter(Transaction.owner_email == owner_email)
+
     transactions = (
-        db.query(Transaction)
-        .order_by(
+        q.order_by(
             Transaction.transaction_date.desc()
         )
         .limit(limit)

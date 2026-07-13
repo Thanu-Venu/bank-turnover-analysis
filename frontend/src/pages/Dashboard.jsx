@@ -77,7 +77,7 @@ function Dashboard() {
     };
 
     const handleLogout = () =>
-        api.get("/auth/logout").then(() => { window.location.href = "http://localhost:5173/login"; });
+        api.get("/auth/logout").then(() => { window.location.href = "/login"; });
 
     if (!summary) {
         return (
@@ -119,7 +119,7 @@ function Dashboard() {
             <main style={{
                 flex: 1,
                 minWidth: 0,
-                marginLeft:0,
+                marginLeft: 0,
                 transition: "margin-left 0.3s cubic-bezier(0.4,0,0.2,1)",
                 boxSizing: "border-box",
                 padding: "36px 40px",

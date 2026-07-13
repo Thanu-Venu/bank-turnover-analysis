@@ -3,7 +3,7 @@ from datetime import datetime
 from app.db.database import SessionLocal
 from app.models.transactions import Transaction as TransactionModel
 
-def save_transactions(transactions):
+def save_transactions(transactions, owner_email=None):
     db=SessionLocal()
 
     try:
@@ -23,6 +23,7 @@ def save_transactions(transactions):
                 credit=transaction.credit,
                 balance=transaction.balance
             )
+            db_transaction.owner_email = owner_email
 
             db.add(db_transaction)
         db.commit()
