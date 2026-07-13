@@ -192,6 +192,7 @@ function MonthlyTrendChart({ data, theme = "dark" }) {
                         <XAxis
                             dataKey="month"
                             tick={{ fill: tk.tickColor, fontSize: 11, fontWeight: 500 }}
+                            interval={0}
                             axisLine={{ stroke: tk.axisColor }}
                             tickLine={false}
                         />

@@ -31,7 +31,7 @@ async def auth_callback(request:Request):
     "email": user_info["email"]
     }
 
-    return RedirectResponse(url="http://localhost:5173/")
+    return RedirectResponse(url="http://localhost:5174/")
 
 
 @router.get("/auth/me")
