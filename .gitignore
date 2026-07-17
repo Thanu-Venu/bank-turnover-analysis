@@ -219,3 +219,11 @@ __marimo__/
 
 secrets/
 *.json
+# Explicit backend secrets
+/backend/.env
+/backend/secrets/
+# Ignore statement PDFs and local backups containing PII
+/backend/statements/
+/statements/
+# Local repo backup
+repo-backup.bundle

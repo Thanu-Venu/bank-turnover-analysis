@@ -30,6 +30,12 @@ This README covers setup, common maintenance tasks, and verification/check steps
 - Python 3.12 and virtualenv
 - Node.js & npm (for frontend)
 
+## Sensitive data and privacy
+
+- This repository does NOT include any personal bank statements or credentials. Statement PDFs and OAuth/client secrets have been removed from the repository and must be supplied locally for the app to function.
+- Use `backend/.env.example` as a template and create a local `backend/.env` (not checked in) with your `POSTGRES_PASSWORD`, `SECRET_KEY`, and Google OAuth credentials.
+- Move any statement PDFs into a non-tracked folder (for example `~/secrets/bank-turnover-analysis/statements`) and do not commit them.
+
 ---
 
 ## Repo layout (important files)
