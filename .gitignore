@@ -227,3 +227,5 @@ secrets/
 /statements/
 # Local repo backup
 repo-backup.bundle
+backend/test_data/
+backend/output.txt
